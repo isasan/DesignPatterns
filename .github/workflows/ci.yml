@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI - Design Patterns
 
 on:
   push:
@@ -10,52 +10,43 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: order-service-patterns
 
     steps:
-    # 1️⃣ Descarga el código del repo
+    # 1. Descarga el código
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2️⃣ Instala JDK 21
+    # 2. Configura JDK 21
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
 
-    # 3️⃣ Cache para dependencias Maven
+    # 3. Cache de dependencias Maven
     - name: Cache Maven dependencies
       uses: actions/cache@v4
       with:
         path: ~/.m2
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-maven-${{ hashFiles('order-service-patterns/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
 
-    # 4️⃣ Compilar y testear con Maven
+    # 4. Compila y ejecuta tests
     - name: Build with Maven
       run: mvn clean install --no-transfer-progress
 
-    # 5️⃣ (Opcional) Analizar con SonarQube
-    # - name: SonarQube Scan
-    #   uses: sonarsource/sonarqube-scan-action@master
-    #   with:
-    #     projectBaseDir: .
-    #   env:
-    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    #     SONAR_HOST_URL: https://sonarcloud.io
+    # 5. (Opcional) Construye imagen Docker
+    # Si tienes un Dockerfile dentro de order-service-patterns/
+    # - name: Build Docker Image
+    #   run: docker build -t design-patterns-app .
 
-    # 6️⃣ Construir imagen Docker
-    - name: Build Docker image
-      run: docker build -t my-spring-patterns-app .
-
-    # 7️⃣ (Opcional) Push Docker a Docker Hub
+    # 6. (Opcional) Push a Docker Hub
     # - name: Docker Login
     #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
+    #
     # - name: Push Docker image
-    #   run: docker push my-spring-patterns-app
-
-    # 8️⃣ (Opcional) Desplegar a Kubernetes (ej: GKE/OpenShift)
-    # - name: Deploy to Kubernetes
-    #   run: kubectl apply -f k8s/deployment.yaml
+    #   run: docker tag design-patterns-app yourdockeruser/design-patterns:latest && docker push yourdockeruser/design-patterns:latest
