@@ -10,43 +10,36 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: order-service-patterns
 
     steps:
-    # 1. Descarga el código
-    - name: Checkout code
-      uses: actions/checkout@v4
+      # 1. Descarga el código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # 2. Configura JDK 21
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
+      # 2. Configura JDK 21 (usado por Maven)
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
-    # 3. Cache de dependencias Maven
-    - name: Cache Maven dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-maven-${{ hashFiles('order-service-patterns/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
+      # 3. Cachea las dependencias de Maven para acelerar builds futuros
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('order-service-patterns/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
-    # 4. Compila y ejecuta tests
-    - name: Build with Maven
-      run: mvn clean install --no-transfer-progress
+      # 4. Compila y ejecuta tests con Maven
+      - name: Build with Maven
+        run: mvn clean package --no-transfer-progress
 
-    # 5. (Opcional) Construye imagen Docker
-    # Si tienes un Dockerfile dentro de order-service-patterns/
-    # - name: Build Docker Image
-    #   run: docker build -t design-patterns-app .
-
-    # 6. (Opcional) Push a Docker Hub
-    # - name: Docker Login
-    #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    #
-    # - name: Push Docker image
-    #   run: docker tag design-patterns-app yourdockeruser/design-patterns:latest && docker push yourdockeruser/design-patterns:latest
+      # 5. Construye la imagen Docker a partir del Dockerfile
+      - name: Build Docker image
+        run: docker build -t design-patterns-app .
