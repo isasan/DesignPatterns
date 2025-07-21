@@ -97,8 +97,8 @@ String result = facade.processOrder("Monitor", new BigDecimal("250"), "paypal", 
 1. Clona el repositorio:
 
 ```bash
-git clone https://github.com/tu-usuario/order-service-patterns.git
-cd order-service-patterns
+git clone https://github.com/isasan/DesignPatterns.git
+cd DesignPatterns
 ```
 
 2. Importa el proyecto en tu IDE preferido (IntelliJ, VS Code, STS).
